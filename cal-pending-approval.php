@@ -11,11 +11,11 @@ function response_to_cache($cache_file)
   $api_results = pending_api_request();
   $json_results = json_encode($api_results);
 
-  // Remove cache file on error to avoid writing wrong xml
   if ($api_results && $json_results) {
     // Will create file if it doesn't exist
     file_put_contents($cache_file, $json_results);
   } else {
+    // Remove cache file on error to avoid writing wrong xml
     unlink($cache_file);
   }
 }
@@ -46,7 +46,7 @@ function json_cached_api_results($cache_file = NULL, $expires = NULL, $purge_cac
   elseif (filectime($cache_file) < $expires || file_get_contents($cache_file) == '' || $purge_cache) {
     response_to_cache($cache_file);
   }
-  
+
   // Return decoded cache file contents
   return json_decode(file_get_contents($cache_file));
 }
