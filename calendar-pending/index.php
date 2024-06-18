@@ -5,9 +5,9 @@ error_reporting(E_ALL);
 
 require_once('pendingEvents.class.php');
 // DEV / Local - uncomment line below for testing locally, comment out prod require
-require_once('../omni_api.config.local');
+// require_once('../omni_api.config.local');
 // PROD - uncomment before push to remote
-// require_once('/var/www/www.southern.edu/configs/omni_api.config');
+require_once('/var/www/www.southern.edu/configs/omni_api.config');
 
 header("Access-Control-Allow-Origin: *");
 header("Content-Type: application/json; charset=UTF-8");
