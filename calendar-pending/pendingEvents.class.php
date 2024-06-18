@@ -40,7 +40,7 @@ class PendingEvents
 
     if ($response === false) {
       // Handle error
-      echo 'Response is false<br>';
+      echo json_encode(array('message' => 'Response is false'));
       return false;
     } else {
       $decoded = json_decode($response, true);
@@ -76,14 +76,14 @@ class PendingEvents
 
     if ($response === false) {
       // Handle error
-      echo '<br>Response is false<br>';
+      echo json_encode(array('message' => 'Response is false'));
       return false;
     } else {
       $data = json_decode($response, true);
 
       if ($data === null) {
         // Handle JSON parsing error
-        echo '<br>Data is null<br>';
+        echo json_encode(array('message' => 'Data is null'));
         return false;
       } else {
         // Process the data
@@ -159,9 +159,9 @@ class PendingEvents
       }
     }
     // Filter for only pending events
-    $response = array_filter($response, 'onlyApproved');
+    $response = array_filter($response, 'onlyApproved', );
     // Return response
-    return $response;
+    return array_values($response);
   }
   /**
    * Fetch pending event by ID.
