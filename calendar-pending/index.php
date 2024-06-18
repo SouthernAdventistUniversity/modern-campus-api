@@ -1,7 +1,7 @@
 <?php
 
-ini_set('display_errors', 1);
-error_reporting(E_ALL);
+// ini_set('display_errors', 1);
+// error_reporting(E_ALL);
 
 require_once('pendingEvents.class.php');
 // DEV / Local - uncomment line below for testing locally, comment out prod require
@@ -30,7 +30,12 @@ function endpoint_handler()
 {
   // Create Pending Events Instance
   $pendingEvents = new PendingEvents();
+
   // Get endpoints
+  if (!isset($_SERVER['PATH_INFO'])) {
+    http_response_code(400);
+    return json_encode(array('message' => 'No Paramater Passed'));
+  }
   $endpoint = $_SERVER['PATH_INFO'];
 
   // All Events
@@ -42,7 +47,7 @@ function endpoint_handler()
       // Get Events in Range
       $events = $pendingEvents->getEventsByDate($query);
       // Return Events
-      echo json_encode($events);
+      return json_encode($events);
     }
     // ELSE
     // RETURN: All Events
@@ -56,7 +61,7 @@ function endpoint_handler()
       // Get All Events
       $events = $pendingEvents->getAllEvents($purge);
       // Return events
-      echo json_encode($events);
+      return json_encode($events);
     }
   }
   // Event By ID
@@ -65,11 +70,11 @@ function endpoint_handler()
     // Get event by ID
     $event = $pendingEvents->getEventById($eventId);
     // Return Event
-    echo json_encode($event);
+    return json_encode($event);
   } else {
-    http_response_code(404);
-    echo json_encode(array('message' => 'No Endpoint Matched'));
+    http_response_code(400);
+    return json_encode(array('message' => 'No Endpoint Matched'));
   }
 }
 
-endpoint_handler();
+echo endpoint_handler();
