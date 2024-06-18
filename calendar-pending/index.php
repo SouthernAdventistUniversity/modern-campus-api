@@ -39,30 +39,10 @@ function endpoint_handler()
     // RETURN: date range
     if (isset($_SERVER['QUERY_STRING'])) {
       $query = $_SERVER['QUERY_STRING'];
-      // $date_regex = '(0[1-9]|[12][0-9]|3[01])-(0[1-9]|1[1,2])-(19|20)\d{2}/';
-      // $start = '';
-      // $end = '';
-      //
-      // if (preg_match('/start=' . $date_regex, $query, $matches)) {
-      //   $start = $matches[1];
-      // }
-      // if (preg_match('/end=' . $date_regex, $query, $matches)) {
-      //   $end = $matches[1];
-      // }
-      //
-      // // Check if both start and end params passed
-      // if ($start && $end) {
-      
-
       // Get Events in Range
       $events = $pendingEvents->getEventsByDate($query);
       // Return Events
       echo json_encode($events);
-
-
-      // } else {
-      //   echo json_encode('Invalid Start and End Ranges Passed');
-      // }
     }
     // ELSE
     // RETURN: All Events
