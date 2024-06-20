@@ -2,10 +2,12 @@
 Scripts for testing or working with the Modern Campus CMS API
 
 ## Calendar: Pending Approval Events
-Script that fetches pending approval events 
+Script that fetches pending approval events. Done as a proxy since auth is required for MC API.
+All Events endpoint is cached every 30 minutes.
 
 ### Endpoints
 - All Events: `/events`
+- Purge All Events Cache: `/events?purge`
 - Date Range: `/events?start={date}&end={date}` - Date in YYYY-MM-DD format
 - Single Event: `/events/{event-id}`
 
