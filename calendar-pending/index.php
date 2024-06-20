@@ -30,22 +30,34 @@ function endpoint_handler()
 {
   // Create Pending Events Instance
   $pendingEvents = new PendingEvents();
-  
-  echo var_dump($_SERVER);
 
-  // Get endpoints
-  if (!isset($_SERVER['PATH_INFO'])) {
-    http_response_code(400);
-    return json_encode(array('message' => 'No Paramater Passed'));
+  $request_uri = $_SERVER['REQUEST_URI'];
+  $endpoint = null;
+  $query = null;
+
+  // Get endpoint and query
+  // Capture group #1 finds endpoints up to '?'
+  // Capture group #2 finds any characters after '?'
+  if (preg_match('/^.*calendar-pending(.*?)(\?.*)?$/', $request_uri, $matches)) {
+    switch (count($matches)) {
+      case 2:
+        $endpoint = $matches[1];
+        break;
+      case 3:
+        $endpoint = $matches[1];
+        $query = $matches[2];
+        break;
+      default:
+        http_response_code(400);
+        return json_encode(array('message' => 'No Paramater Passed'));
+    }
   }
-  $endpoint = $_SERVER['PATH_INFO'];
 
   // All Events
   if ($endpoint === '/events') {
     // IF: query string passed
     // RETURN: date range
-    if (isset($_SERVER['QUERY_STRING'])) {
-      $query = $_SERVER['QUERY_STRING'];
+    if ($query && str_contains($query, 'start')) {
       // Get Events in Range
       $events = $pendingEvents->getEventsByDate($query);
       // Return Events
@@ -55,7 +67,7 @@ function endpoint_handler()
     // RETURN: All Events
     else {
       // Get Purge param from URL
-      if (isset($_GET['purge'])) {
+      if ($query && str_contains($query, 'purge')) {
         $purge = true;
       } else {
         $purge = false;

@@ -148,7 +148,7 @@ class PendingEvents
    */
   public function getEventsByDate($query)
   {
-    $endpoint = 'calendars/www/events?' . $query;
+    $endpoint = 'calendars/www/events' . $query;
     // Fetch response
     $response = $this->getFromAPI($endpoint);
 
