@@ -30,6 +30,8 @@ function endpoint_handler()
 {
   // Create Pending Events Instance
   $pendingEvents = new PendingEvents();
+  
+  echo var_dump($_SERVER);
 
   // Get endpoints
   if (!isset($_SERVER['PATH_INFO'])) {
