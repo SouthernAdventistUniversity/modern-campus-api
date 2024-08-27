@@ -112,6 +112,22 @@ class PendingEvents
   }
 
   /**
+   * Fetch, cache, and return API response
+   * @param string $endpoint
+   * @param string $cache_file
+   * @return array (JSON Decoded)
+   */
+  private function fetchCacheReturn($endpoint, $cache_file)
+  {
+    // Fetch response
+    $response = $this->getFromAPI($endpoint);
+    // Write to cache
+    $this->writeToCache($response, $cache_file);
+    // Return response
+    return $response;
+  }
+
+  /**
    * Fetch all pending events and write them to cache.
    * Uses a JSON file cache to store response. Modified from: https://www.kevinleary.net/blog/api-request-caching-json-php/
    * - Checks if data is not cached, empty, or too old
@@ -123,21 +139,22 @@ class PendingEvents
   {
     $endpoint = 'calendars/www/reports/pending-approvals?category=General&timezone=US%2FEastern';
     $cache_file = '../cache/pending-cache.json';
-    // Expires if last cache older than 30 minutes
-    $expired = filectime($cache_file) < time() - 30 * 60;
 
-    // If: file is older than expire time OR file is empty OR purge_cache is true: fetch, cache, and return response
-    if (!file_exists($cache_file) || file_get_contents($cache_file) == '' || $expired || $purge_cache) {
-      // Fetch response
-      $response = $this->getFromAPI($endpoint);
-      // Write to cache
-      $this->writeToCache($response, $cache_file);
-      // Return response
-      return $response;
-    }
-    // Else: return decoded cache file content
-    else {
-      return json_decode(file_get_contents($cache_file));
+    // If file doesn't exist: fetch, cache, and return response
+    if (!file_exists($cache_file)) {
+      return $this->fetchCacheReturn($endpoint, $cache_file);
+    } else {
+      // Expires if last cache older than 30 minutes
+      $expired = filectime($cache_file) < time() - 30 * 60;
+
+      // If: file is older than expire time OR file is empty OR purge_cache is true: fetch, cache, and return response
+      if (file_get_contents($cache_file) == '' || $expired || $purge_cache) {
+        return $this->fetchCacheReturn($endpoint, $cache_file);
+      }
+      // Else: return decoded cache file content
+      else {
+        return json_decode(file_get_contents($cache_file));
+      }
     }
   }
   /**
@@ -159,7 +176,7 @@ class PendingEvents
       }
     }
     // Filter for only pending events
-    $response = array_filter($response, 'onlyApproved', );
+    $response = array_filter($response, 'onlyApproved',);
     // Return response
     return array_values($response);
   }
