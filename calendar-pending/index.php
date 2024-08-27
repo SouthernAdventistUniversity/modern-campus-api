@@ -15,6 +15,22 @@ header("Access-Control-Allow-Methods: OPTIONS,GET");
 header("Access-Control-Max-Age: 3600");
 header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
 
+
+/**
+ * Process API response (JSON encode and limit count)
+ * @param array $response
+ * @param int $count
+ * @return string
+ */
+function processResponse($response, $count)
+{
+  if ($count) {
+    return json_encode(array_slice($response, 0, $count));
+  } else {
+    return json_encode($response);
+  }
+}
+
 /**
  * Handle Endpoints
  *
@@ -26,7 +42,7 @@ header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers
  *
  * @return string
  */
-function endpoint_handler()
+function endpointHandler()
 {
   // Create Pending Events Instance
   $pendingEvents = new PendingEvents();
@@ -34,10 +50,11 @@ function endpoint_handler()
   $request_uri = $_SERVER['REQUEST_URI'];
   $endpoint = null;
   $query = null;
+  $count = null;
 
   // Get endpoint and query
   // Capture group #1 finds endpoints up to '?'
-  // Capture group #2 finds any characters after '?'
+  // Capture group #2 finds any characters including and after '?'
   if (preg_match('/^.*calendar-pending(.*?)(\?.*)?$/', $request_uri, $matches)) {
     switch (count($matches)) {
       case 2:
@@ -53,6 +70,11 @@ function endpoint_handler()
     }
   }
 
+  // Find count to return from query
+  if ($query && preg_match('/count=(\d+)/', $query, $matches)) {
+    $count = $matches[1];
+  }
+
   // All Events
   if ($endpoint === '/events') {
     // IF: query string passed
@@ -61,7 +83,7 @@ function endpoint_handler()
       // Get Events in Range
       $events = $pendingEvents->getEventsByDate($query);
       // Return Events
-      return json_encode($events);
+      return processResponse($events, $count);
     }
     // ELSE
     // RETURN: All Events
@@ -75,7 +97,7 @@ function endpoint_handler()
       // Get All Events
       $events = $pendingEvents->getAllEvents($purge);
       // Return events
-      return json_encode($events);
+      return processResponse($events, $count);
     }
   }
   // Event By ID
