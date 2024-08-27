@@ -91,4 +91,4 @@ function endpoint_handler()
   }
 }
 
-echo endpoint_handler();
+echo endpointHandler();
