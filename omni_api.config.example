@@ -6,3 +6,5 @@
 define('ACCOUNT', 'southern');
 define('CAL_USERNAME', '');
 define('CAL_PASSWORD', ''); 
+define('PUB_USERNAME', '');
+define('PUB_PASSWORD', '');
